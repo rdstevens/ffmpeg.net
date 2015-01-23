@@ -30,8 +30,8 @@ namespace FFMpegNet
 			int Resample(AVAudioFrame^ inputFrame, AVAudioFrame^ outputFrame)
 			{
 				int consumed = 0;
-				int bytesProduced = ::av_resample(_resampleContext, reinterpret_cast<short *>(outputFrame->Data),
-					reinterpret_cast<short *>(inputFrame->Data),
+				int bytesProduced = ::av_resample(_resampleContext, reinterpret_cast<short *>(outputFrame->Data->ToPointer()),
+					reinterpret_cast<short *>(inputFrame->Data->ToPointer()),
 					&consumed,
 					inputFrame->NumberOfSamples * inputFrame->Channels, 
 					outputFrame->NumberOfSamples * outputFrame->Channels, 1);

@@ -85,13 +85,22 @@ namespace FFMpegNet
 				}
 			}
 
-			property FFMpegNet::AVCodec::CodecID CodecID
+#ifdef CodecID
+#undef CodecID
+#define ___CodecID
+#endif
+			property FFMpegNet::AVCodec::AVCodecID CodecID
 			{
-				FFMpegNet::AVCodec::CodecID get()
+				FFMpegNet::AVCodec::AVCodecID get()
 				{
-					return static_cast<FFMpegNet::AVCodec::CodecID>(_avCodec->id);
+					return static_cast<FFMpegNet::AVCodec::AVCodecID>(_avCodec->id);
 				}
 			}
+			
+#ifdef ___CodecID
+#undef ___CodecID
+#define CodecID AVCodecID
+#endif
 
 			property FFMpegNet::AVCodec::CodecCap Capabilities
 			{

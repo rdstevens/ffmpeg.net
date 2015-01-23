@@ -132,31 +132,31 @@ namespace FFMpegNet
 			}
 
 			// Get the list of recommended codecs for this format, in better-first order.
-			FFMpegNet::AVCodec::CodecID GetCodecID(int index)
+			FFMpegNet::AVCodec::AVCodecID GetCodecID(int index)
 			{
 				//enum CodecID av_codec_get_id(const struct AVCodecTag * const *tags, unsigned int tag);
-				return static_cast<FFMpegNet::AVCodec::CodecID> (av_codec_get_id(_avOutputFormat->codec_tag, index));
+				return static_cast<FFMpegNet::AVCodec::AVCodecID> (av_codec_get_id(_avOutputFormat->codec_tag, index));
 			}
 
-			property array<FFMpegNet::AVCodec::CodecID>^ RecommendedCodecs
+			property array<FFMpegNet::AVCodec::AVCodecID>^ RecommendedCodecs
 			{
-				array<FFMpegNet::AVCodec::CodecID>^ get()
+				array<FFMpegNet::AVCodec::AVCodecID>^ get()
 				{
 					int count = 0;
 
 					// arbitrary maximum
 					for(int i = 0; i < 1024; i++)
 					{
-						FFMpegNet::AVCodec::CodecID codec = GetCodecID(i);
+						FFMpegNet::AVCodec::AVCodecID codec = GetCodecID(i);
 						count++;
 
-						if (codec == FFMpegNet::AVCodec::CodecID::NONE)
+						if (codec == FFMpegNet::AVCodec::AVCodecID::NONE)
 						{
 							break;
 						}
 					}
 
-					array<FFMpegNet::AVCodec::CodecID>^ rtn = gcnew array<FFMpegNet::AVCodec::CodecID>(count);
+					array<FFMpegNet::AVCodec::AVCodecID>^ rtn = gcnew array<FFMpegNet::AVCodec::AVCodecID>(count);
 					for(int i = 0; i < count; i++)
 					{
 						rtn[i] = GetCodecID(i);

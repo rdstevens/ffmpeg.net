@@ -24,6 +24,7 @@
 
 #include "AVConstants.h"
 #include "AVFMT.h"
+#include "AVError.h"
 #include "AVFormatContext.h"
 #include "AVFormatParameters.h"
 #include "AVFrac.h"
@@ -35,3 +36,4 @@
 #include "PixelFormat.h"
 
 #include "SwScaler.h"
+#include "SWResampleContext.h"

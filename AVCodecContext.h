@@ -49,6 +49,18 @@ namespace FFMpegNet
 			// AVCodec *codec;
 			// char codec_name[32]
 
+			// Warning:
+			// In the ffmpeg codebase (linked through ffmpeg_actual.h) you might find code like
+			//#if FF_API_CODEC_ID
+			//#define CodecID AVCodecID
+			//#endif
+			// Which might only kick in on release builds!
+
+#ifdef CodecID
+#undef CodecID
+#define ___CodecID
+#endif
+
 			property FFMpegNet::AVCodec::AVCodecID CodecID
 			{
 				FFMpegNet::AVCodec::AVCodecID get()
@@ -61,6 +73,11 @@ namespace FFMpegNet
 				}
 			}
 			
+#ifdef ___CodecID
+#undef ___CodecID
+#define CodecID AVCodecID
+#endif
+
 			property int CodecTag
 			{
 				int get()

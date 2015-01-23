@@ -1,9 +1,16 @@
 #pragma once
 
+#define P1(F) #F
+#define P(F) P1(F)
+
 namespace FFMpegNet 
 {
 	namespace AVUtil
 	{
+		// Note: There's a macro in FFMPEG that #define's PixelFormat as AVPixelFormat, so this
+		// class will be AVPixelFormat. I've tried messing around pushing/popping macros, but it's
+		// always going to be a bit messy. I don't want to mess with FFMPEG and just #undef PixelFormat
+		// either.
 		public enum class PixelFormat 
 		{
 			NONE= -1,			
@@ -83,6 +90,5 @@ namespace FFMpegNet
 			Y400A,     ///< 8bit gray, 8bit alpha
 			NB,        ///< number of pixel formats, DO NOT USE THIS if you want to link with shared libav* because the number of formats might differ between versions
 		};
-
 	};
 };
