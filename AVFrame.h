@@ -74,9 +74,16 @@ namespace FFMpegNet
 						}
 						else if (_avFrame->type == static_cast<::AVMediaType>(AVUtil::AVMediaType::AUDIO))
 						{
-							free(_avFrame->data[0]);
-							_avFrame->data[0] = 0;
-							_avFrame->linesize[0] = 0;
+							for(int i = 0; i < AV_NUM_DATA_POINTERS; i++)
+							{
+								if (_avFrame->data[i] != NULL)
+								{
+									//fprintf(stderr, "about to free %d\n", _avFrame->data[0]);
+									free(_avFrame->data[i]);
+									_avFrame->data[i] = 0;
+									_avFrame->linesize[i] = 0;
+								}
+							}
 						}
 						else
 						{
@@ -95,6 +102,11 @@ namespace FFMpegNet
 			{
 				_avFrame->data[0][2* sampleNumber] = (uint8_t)value;
 				_avFrame->data[0][2* sampleNumber + 1] = (uint8_t)value;
+			}
+
+			short GetSample(int sampleNumber)
+			{
+				return _avFrame->data[0][2 * sampleNumber];
 			}
 
 			void SetType(int type)
@@ -123,15 +135,41 @@ namespace FFMpegNet
 				}
 			}
 
-
-			// TODO: Sort out better data type. IntPtr probably...
-			property int Data
+			IntPtr^ GetData(int line)
 			{
-				int get ()
+				if (line >= AV_NUM_DATA_POINTERS)
 				{
-					return (int) _avFrame->data[0];
+					throw gcnew ArgumentException("line must be less than AV_NUM_DATA_POINTERS");
+				}
+				return gcnew IntPtr(_avFrame->data[line]);
+			}
+
+			int GetLineSize(int line)
+			{
+				if (line >= AV_NUM_DATA_POINTERS)
+				{
+					throw gcnew ArgumentException("line must be less than AV_NUM_DATA_POINTERS");
+				}
+				return _avFrame->linesize[line];
+			}
+
+			property IntPtr^ Data
+			{
+				IntPtr^ get()
+				{
+					// What about planar data types?
+					return gcnew IntPtr(_avFrame->data);
 				}
 			}
+
+			property IntPtr^ LineSizes
+			{
+				IntPtr^ get()
+				{
+					return gcnew IntPtr(_avFrame->linesize);
+				}
+			}
+
 
 			property int Size
 			{
@@ -152,6 +190,40 @@ namespace FFMpegNet
 				{
 					return _avFrame->coded_picture_number;
 				}
+			}
+
+			void Debug_DumpFrame(String^ filename)
+			{
+				const char * p = (const char *)Marshal::StringToHGlobalAnsi(filename).ToPointer();
+				FILE * f = fopen(p, "wb");
+				if (f != NULL)
+				{
+					for (int i = 0; i < AV_NUM_DATA_POINTERS; i++)
+					{
+						if (_avFrame->data[i] != NULL)
+						{
+							int bytesToWrite = 0;
+							if (_avFrame->linesize[i] != 0)
+							{
+								bytesToWrite = _avFrame->linesize[i];
+							}
+							else
+							{
+								bytesToWrite = _avFrame->linesize[0];
+							}
+							fwrite(&i, sizeof(int), 1, f);
+							fwrite(&bytesToWrite, sizeof(int), 1, f);
+							int zero = 0;
+							fwrite(&zero, sizeof(int), 1, f);
+							fwrite(&zero, sizeof(int), 1, f);
+							fwrite(&zero, sizeof(int), 1, f);
+							fwrite(&zero, sizeof(int), 1, f);
+							fwrite(_avFrame->data[i], sizeof(uint8_t), bytesToWrite, f); 
+						}
+					}
+					fclose(f);
+				}
+				
 			}
 
 		internal:
@@ -225,10 +297,27 @@ namespace FFMpegNet
 			AVAudioFrame(AVCodec::AVSampleFormat sampleFormat, int numberOfSamples, int channels, int sampleRate) : AVFrame()
 			{
 				int audioBufferLength = Init(sampleFormat, numberOfSamples, channels, sampleRate);
+				// The audio buffer length calculation asks ffmpeg what the bytes-per-sample is, 
+				// and handles planar/interleaved for us.
 
 				manageMemory = true;
 				
-				_avFrame->data[0] = (uint8_t *)malloc(audioBufferLength);
+				int isPlanar = ::av_sample_fmt_is_planar((::AVSampleFormat)sampleFormat);
+				if (isPlanar == 0)
+				{
+					_avFrame->data[0] = (uint8_t *)malloc(audioBufferLength);
+					//fprintf(stderr, "malloc gave (0 - interleaved) %d\n", _avFrame->data[0]);
+				}
+				else
+				{
+					// Does the channel count imply a particular layout? I'm going to assume channels
+					// are allocated from zero and proceed contiguously until count.
+					for(int i = 0; i < channels; i++)
+					{
+						_avFrame->data[i] = (uint8_t *)malloc(audioBufferLength);
+						//fprintf(stderr, "malloc gave (%d - planar) %d\n", i, _avFrame->data[i]);
+					}
+				}
 				_avFrame->extended_data = _avFrame->data;	// to avoid warning
 			}
 
@@ -263,10 +352,24 @@ namespace FFMpegNet
 				_avFrame->nb_samples = numberOfSamples;
 
 				int bytesPerSample = ::av_get_bytes_per_sample((::AVSampleFormat)_avFrame->format);
-				int audioSampleLength = bytesPerSample * channels;	
-				int audioBufferLength = audioSampleLength * _avFrame->nb_samples;
 
+				int isPlanar = ::av_sample_fmt_is_planar((::AVSampleFormat)_avFrame->format);
+				int audioSampleLength = bytesPerSample;	
+				if (isPlanar == 0)
+				{
+					audioSampleLength = bytesPerSample * channels;	
+				}
+				int audioBufferLength = audioSampleLength * _avFrame->nb_samples;
+				
 				_avFrame->linesize[0] = audioBufferLength;
+				if (isPlanar != 0)
+				{
+					for(int i = 0; i < channels; i++)
+					{
+						_avFrame->linesize[i] = audioBufferLength;
+					}
+				}
+				
 				_avFrame->sample_rate = sampleRate;
 				_avFrame->channels = channels;
 
