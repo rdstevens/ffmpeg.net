@@ -6,12 +6,48 @@
 #include "AVOutputFormat.h"
 using namespace System;
 
+#define _ENABLE_LOGGING
+
 static void __cdecl _avLogCallback(void * ptr, int level, const char * fmt, va_list args)
 {
+#ifndef _ENABLE_LOGGING
+	return;
+#else
 	char message[8192];
+	char * _f = (char *)fmt;
+	bool _pc = false;
+	bool _t = false;
+	bool _d = false;
+	while(_f != 0 && *_f != '\0' && *_f != '\n')
+	{
+		if (*_f == '%')
+		{
+			_pc = true;
+			_f++;
+			continue;
+		}
+
+		if (_pc && !_t && *_f == 't')
+		{
+			_t = true;
+			_f++;
+			continue;
+		}
+
+		if (_pc && _t && *_f == 'd')
+		{
+			_d = true;
+			return;
+		}
+		_d = false;
+		_t = false;
+		_pc = false;
+		_f++;
+	}
 	vsprintf_s(message, 8192, fmt, args);
 	size_t messageLength = strlen(message);
 	fprintf(stderr, message);
+#endif
 }
 
 namespace FFMpegNet 

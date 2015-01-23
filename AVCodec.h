@@ -237,7 +237,7 @@ namespace FFMpegNet
 
 			bool CanEncode()
 			{
-				return (_avCodec->encode != 0);
+				return (_avCodec->encode2 != 0);
 			}
 
 			bool CanDecode()

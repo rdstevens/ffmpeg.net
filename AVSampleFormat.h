@@ -30,6 +30,11 @@ namespace FFMpegNet
 			{
 				return ::av_get_bytes_per_sample(static_cast<::AVSampleFormat>(format));
 			}
+
+			static bool IsPlanar(AVSampleFormat format)
+			{
+				return ::av_sample_fmt_is_planar(static_cast<::AVSampleFormat>(format)) != 0;
+			}
 		};
 
 	};

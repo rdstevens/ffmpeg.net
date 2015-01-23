@@ -99,6 +99,29 @@ namespace FFMpegNet
 			// void *opaque
 			
 
+			property int BitRate
+			{
+				int get()
+				{
+					return _avCodecContext->bit_rate;
+				}
+				void set(int value)
+				{
+					_avCodecContext->bit_rate = value;
+				}
+			}
+			
+			property int BitRateTolerance
+			{
+				int get()
+				{
+					return _avCodecContext->bit_rate_tolerance;
+				}
+				void set(int value)
+				{
+					_avCodecContext->bit_rate_tolerance = value;
+				}
+			}
 
 			property int GlobalQuality
 			{
@@ -283,8 +306,6 @@ namespace FFMpegNet
 					return _avCodecContext->cutoff;
 				}
 			}
-			//	uint64_t channel_layout;
-			//	uint64_t request_channel_layout;
 			//	enum AVAudioServiceType audio_service_type;
 			//	enum AVSampleFormat request_sample_fmt;
 
@@ -336,7 +357,27 @@ namespace FFMpegNet
 			//	char *stats_out;
 			//	char *stats_in;
 			//	int workaround_bugs;
+			
 			//	int strict_std_compliance;
+			//#define FF_COMPLIANCE_VERY_STRICT   2 ///< Strictly conform to an older more strict version of the spec or reference software.
+			//#define FF_COMPLIANCE_STRICT        1 ///< Strictly conform to all the things in the spec no matter what consequences.
+			//#define FF_COMPLIANCE_NORMAL        0
+			//#define FF_COMPLIANCE_UNOFFICIAL   -1 ///< Allow unofficial extensions
+			//#define FF_COMPLIANCE_EXPERIMENTAL -2 ///< Allow nonstandardized experimental things.
+			property int StrictStdCompliance
+			{
+				int get()
+				{
+					return _avCodecContext->strict_std_compliance;
+				}
+				void set(int val)
+				{
+					_avCodecContext->strict_std_compliance = val;
+				}
+			}
+
+
+
 			//	int error_concealment;
 			//	int debug;
 			//	int debug_mv;
@@ -393,16 +434,16 @@ namespace FFMpegNet
 				::avcodec_flush_buffers(_avCodecContext);
 			}
 
-			void DefaultFreeBuffers()
-			{
-				::avcodec_default_free_buffers(_avCodecContext);
-			}
+			//void DefaultFreeBuffers()
+			//{
+			//	::avcodec_default_free_buffers(_avCodecContext);
+			//}
 
-			bool Open(FFMpegNet::AVCodec::AVCodec^ avCodec)
+			int Open(FFMpegNet::AVCodec::AVCodec^ avCodec)
 			{
 				::AVDictionary * options = NULL;
 				int result = ::avcodec_open2(_avCodecContext, avCodec->_avCodec, &options);
-				return result == 0;
+				return result;
 			}
 
 			void Close()
@@ -508,30 +549,6 @@ namespace FFMpegNet
 				}
 			}
 
-			property int BitRate
-			{
-				int get()
-				{
-					return _avCodecContext->bit_rate;
-				}
-				void set(int value)
-				{
-					_avCodecContext->bit_rate = value;
-				}
-			}
-			
-			property int BitRateTolerance
-			{
-				int get()
-				{
-					return _avCodecContext->bit_rate_tolerance;
-				}
-				void set(int value)
-				{
-					_avCodecContext->bit_rate_tolerance = value;
-				}
-			}
-
 			property int QMin
 			{
 				int get()
@@ -621,7 +638,21 @@ namespace FFMpegNet
 					_avCodecContext->channels = value;
 				}
 			}
-			
+
+						//	uint64_t channel_layout;
+			property __int64 ChannelLayout
+			{
+				__int64 get()
+				{
+					return _avCodecContext->channel_layout;
+				}
+				void set(__int64 value)
+				{
+					_avCodecContext->channel_layout = value;
+				}
+			}
+
+
 			property FFMpegNet::AVCodec::AVSampleFormat SampleFormat
 			{
 				FFMpegNet::AVCodec::AVSampleFormat get()

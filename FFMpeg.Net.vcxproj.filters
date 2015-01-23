@@ -28,6 +28,9 @@
     <Filter Include="Header Files\SWScale">
       <UniqueIdentifier>{28b94195-cb7d-4af4-afff-c52edec27d4a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\SWResample">
+      <UniqueIdentifier>{154c781b-fe2f-4717-8e3c-380395816554}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Stdafx.h">
@@ -119,6 +122,12 @@
     </ClInclude>
     <ClInclude Include="AVCodecID.h">
       <Filter>Header Files\AVCodec</Filter>
+    </ClInclude>
+    <ClInclude Include="AVError.h">
+      <Filter>Header Files\AVUtil</Filter>
+    </ClInclude>
+    <ClInclude Include="SWResampleContext.h">
+      <Filter>Header Files\SWResample</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

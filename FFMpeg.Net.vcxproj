@@ -22,12 +22,14 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <CLRSupport>true</CLRSupport>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v100</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <CLRSupport>true</CLRSupport>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v100</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -53,12 +55,12 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\FFMpeg\ffmpeg;$(ProjectDir)..\ffmpeg_vs_support;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\FFMpeg\Release55\include;$(ProjectDir)..\ffmpeg_vs_support;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>swscale-2.lib;avutil-51.lib;avformat-54.lib;avcodec-54.lib;</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\..\FFMpeg\Release54</AdditionalLibraryDirectories>
+      <AdditionalDependencies>swscale.lib;avutil.lib;avformat.lib;avcodec.lib;swresample.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\FFMpeg\Release55\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -66,12 +68,14 @@
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\FFMpeg\ffmpeg;$(ProjectDir)..\ffmpeg_vs_support;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\FFMpeg\Release55\include;$(ProjectDir)..\ffmpeg_vs_support;</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>swscale-2.lib;avutil-51.lib;avformat-54.lib;avcodec-54.lib;</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\..\FFMpeg\Release54</AdditionalLibraryDirectories>
+      <AdditionalDependencies>swscale.lib;avutil.lib;avformat.lib;avcodec.lib;swresample.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\FFMpeg\Release55\lib</AdditionalLibraryDirectories>
+      <AdditionalOptions>/ignore:4248 %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -85,6 +89,7 @@
     <ClInclude Include="AVCodec.h" />
     <ClInclude Include="AVCodecContext.h" />
     <ClInclude Include="AVConstants.h" />
+    <ClInclude Include="AVError.h" />
     <ClInclude Include="AVFMT.h" />
     <ClInclude Include="AVFormatContext.h" />
     <ClInclude Include="AVFormatParameters.h" />
@@ -109,6 +114,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="AVSampleFormat.h" />
     <ClInclude Include="Stdafx.h" />
+    <ClInclude Include="SWResampleContext.h" />
     <ClInclude Include="SwScaler.h" />
     <ClInclude Include="SWS_Flags.h" />
     <ClInclude Include="URL.h" />
